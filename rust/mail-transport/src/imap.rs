@@ -178,7 +178,7 @@ async fn read_snapshot(
                 stream.try_collect::<Vec<_>>().await.map_err(map_imap)?
             };
             headers = fetched.iter().filter_map(header_from_fetch).collect();
-            headers.sort_by(|a, b| b.uid.cmp(&a.uid));
+            headers.sort_by_key(|a| std::cmp::Reverse(a.uid));
             headers.truncate(limit as usize);
         }
     }
