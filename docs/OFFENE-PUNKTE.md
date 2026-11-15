@@ -17,6 +17,6 @@ Stand 15.11.2026. Diese Punkte sind noch nicht entschieden; die Spezifikation tr
 | 11 | Repo-Hosting | Wo soll das Repo liegen (GitHub, GitLab …)? | lokal, Übergabe als Archiv; inzwischen GitHub |
 | 12 | Lizenz | Open Source (z. B. für Vertrauen bei Krypto/Relay) oder proprietär? | Relay quelloffen; App offen |
 | 13 | Gmail-Verifizierung | Budget/Zeit für Googles Sicherheitsprüfung (CASA) | Gmail zunächst über IMAP + OAuth |
-| 14 | IMAP-KMP-Bibliothek | Welche TLS-validierende, auf Android und iOS lauffähige Implementierung wird für IMAP verwendet? | Kandidaten aus ADR-002 evaluieren; keine plattformspezifische Sackgasse festlegen |
+| 14 | IMAP-KMP-Bibliothek | **Architektur entschieden:** Rust-Kern + UniFFI gemäss [ADR-006](adr/ADR-006-RUST-IMAP-UNIFFI.md). Welche Crate besteht den mobilen Integrations-Spike? | `async-imap` 0.12.x bevorzugt, `io-imap` als Fallback; Freigabe nach Android-/iOS-Build und GreenMail-Tests |
 | 15 | SQLCipher-KMP-Integration | Welche SQLDelight-Treiber-/SQLCipher-Kombination erfüllt die Verschlüsselungsanforderung auf beiden Plattformen? | Vor Verarbeitung realer Maildaten klären und testen |
 | 16 | Build-Toolchain | Welche exakten Versionen von Kotlin, Gradle, Android Gradle Plugin und Xcode werden als unterstützte Matrix festgelegt? | Vorläufige Gradle-Versionen im Grundgerüst, Build noch nicht verifiziert |
