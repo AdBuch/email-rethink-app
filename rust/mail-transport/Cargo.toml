@@ -1,0 +1,15 @@
+[package]
+name = "email-rethink-mail-transport"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[lib]
+name = "email_rethink_mail_transport"
+crate-type = ["cdylib", "staticlib", "rlib"]
+
+[dependencies]
+uniffi = "0.29.4"
+
+[build-dependencies]
+uniffi = { version = "0.29.4", features = ["build"] }
