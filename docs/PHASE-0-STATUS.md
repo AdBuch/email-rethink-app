@@ -2,6 +2,12 @@
 
 Stand: 15.11.2026. Branch: `feature/phase-0-grundlagen`.
 
+## Entwicklungszyklus 1 (15.11.2026)
+- Rust-Crate `rust/mail-transport` mit UniFFI-UDL, Build-Skript, Versionsfunktion und restriktiver IMAPS-Port-Policy angelegt.
+- Rust-Unit-Tests und GitHub-Actions-Workflow (`rust-check`) ergänzt; Ausführungsergebnisse noch nicht verifiziert.
+- SQLDelight-Upserts von `INSERT OR REPLACE` auf `ON CONFLICT DO UPDATE` umgestellt, um unbeabsichtigte Kaskadenlöschungen zu vermeiden.
+- Architekturentscheidungen ADR-006 bis ADR-009 festgehalten.
+
 ## Angelegt
 - Gradle-Multiprojekt und KMP-Modulstruktur nach ADR-002.
 - SQLDelight-Schema für Konten, Ordner und Nachrichten mit UID-basierter Eindeutigkeit.
@@ -10,13 +16,13 @@ Stand: 15.11.2026. Branch: `feature/phase-0-grundlagen`.
 - iOS-Inbox als SwiftUI-Ansicht (noch ohne Datenanbindung).
 
 ## Nicht implementiert oder nicht verifiziert
-- IMAP-TLS-Client, Authentifizierung und Header-Fetch.
+- Echter IMAP-TLS-Client, Authentifizierung und Header-Fetch; der Rust-Crate ist bislang nur ein UniFFI-Binding-Spike.
 - GreenMail-Integrationstests und Docker-Testumgebung.
 - SQLCipher-Verschlüsselung und sichere Schlüsselablage.
 - DB-Treiberintegration in die Apps und echter Inbox-Datenfluss.
 - SMTP, OAuth/PKCE und Provider-Autokonfiguration.
 - iOS-Xcode-Projekt und Framework-Integration.
-- Gradle Wrapper, Android-/iOS-Builds und Tests.
+- Gradle Wrapper, Android-/iOS-Builds und ausgeführte Tests (Rust-CI ist konfiguriert, aber noch nicht verifiziert).
 
 **Wichtig:** Die aktuellen UI-Ansichten sind nur leere Hüllen, keine funktionsfähigen Mailclients. Es wurden keine Builds oder Tests ausgeführt.
 
