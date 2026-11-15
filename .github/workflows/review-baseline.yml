@@ -7,6 +7,7 @@ on:
     branches: [feature/phase-0-grundlagen]
 jobs:
   rust-baseline:
+    if: false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -37,6 +38,7 @@ jobs:
           cargo tree -i ring 2>&1 | head -n 30
           echo "BASELINE ring exit=$?"
   android-baseline:
+    if: false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -65,7 +67,9 @@ jobs:
           echo "=== mailbox.rs"; grep -nE "pub [a-z_]+:" $S/src/types/mailbox.rs
           echo "=== error.rs"; sed -n '1,80p' $S/src/error.rs | grep -v "///"
           echo "=== Cargo features"; sed -n '/\[features\]/,/^$/p' $S/Cargo.toml
-          P=$(ls -d ~/.cargo/registry/src/*/imap-proto-*); echo "=== imap-proto $P"; grep -n "pub struct Envelope" -A14 $P/src/types.rs; grep -n "pub struct Address" -A8 $P/src/types.rs
+          P=$(ls -d ~/.cargo/registry/src/*/imap-proto-*); echo "=== imap-proto $P"; grep -rn "pub struct Envelope" -A14 $P/src | head -n 20; grep -rn "pub struct Address" -A8 $P/src | head -n 12
+          sed -n '1160,1170p' $S/src/client.rs
+          exit 0
       - name: Versionen
         run: |
           set +e
@@ -77,10 +81,13 @@ jobs:
           for m in androidx/sqlite/sqlite androidx/lifecycle/lifecycle-viewmodel-compose androidx/compose/material3/material3 androidx/activity/activity-compose com/android/tools/build/gradle; do echo "$m: $(curl -sL https://dl.google.com/dl/android/maven2/$m/maven-metadata.xml | grep -oE '<version>[^<]*</version>' | grep -vE 'alpha|beta|rc' | tail -n 3 | tr -d '\n')"; done
           echo "NDK: $ANDROID_NDK_HOME $ANDROID_NDK_LATEST_HOME"; ls $ANDROID_HOME/ndk
           docker run --rm --entrypoint sh greenmail/standalone:2.1.3 -c 'ls -la /home/greenmail; cat /home/greenmail/*.sh 2>/dev/null | head -n 30' 2>&1 | tail -n 40
+          exit 0
       - name: mail-parser API
         run: |
           set +e
           mkdir /tmp/mp && cd /tmp/mp && cargo init --name mp -q && cargo add mail-parser -q && cargo fetch -q
           S=$(ls -d ~/.cargo/registry/src/*/mail-parser-*); echo "SRC=$S"
           grep -rnE "pub fn (parse|subject|body_text|body_html|text_bodies|html_bodies|from|date|message_id)\b" -A2 $S/src | head -n 60
-          grep -n "pub enum PartType" -A22 $S/src/lib.rs
+          grep -rn "pub enum PartType" -A22 $S/src | head -n 30
+          grep -rn "pub struct MessagePart" -A14 $S/src | head -n 20
+          exit 0
