@@ -1,0 +1,4 @@
+namespace mail_transport {
+    string transport_version();
+    boolean is_valid_imaps_port(u16 port);
+};
