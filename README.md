@@ -8,6 +8,7 @@ Native E-Mail-App für iPhone und Android, die das Postfach automatisch abarbeit
 - [Offene Punkte](docs/OFFENE-PUNKTE.md)
 - [Architekturentscheidungen (ADR)](docs/adr/)
 - [Standards-Referenz](docs/STANDARDS.md)
+- [Brainstorming Verlaufsdarstellung](docs/konzepte/VERLAUF-BRAINSTORM.md)
 
 ## Eckdaten
 

@@ -192,13 +192,23 @@ Die Herkunft des Status wird angezeigt („bezahlt laut Mail vom 3.11.“).
 
 ### 5.8 Neuartige Verlaufsdarstellung (History)
 
-> Ausgangsidee aus dem Projekt; genaues Konzept noch offen (siehe [Offene Punkte](OFFENE-PUNKTE.md)).
+> Grundkonzept „Chaos mit Zoomstufen“ entschieden am 15.11.2026; Herleitung und alle Varianten im [Brainstorming](konzepte/VERLAUF-BRAINSTORM.md). Details werden per Prototyp validiert.
 
-Vorschlag als Arbeitsgrundlage:
-- **Gesprächsansicht statt Zitat-Ketten:** Zitierte Vorgängertexte werden erkannt und ausgeblendet; jede Nachricht zeigt nur ihren neuen Inhalt, ähnlich einem Chat.
-- **Zeitstrahl pro Kontakt / Thema:** Alle Threads mit einer Person bzw. zu einem Thema auf einer Zeitachse, inkl. Anhängen, Rechnungen und Terminen.
-- **Zusammenfassung oben:** „Worum geht es, was ist offen, wer ist dran?“ (On-Device-KI).
-- **Entscheidungen und Zusagen** hervorgehoben (z. B. „Termin am 20.11. bestätigt“).
+Gewählte Bausteine: Chat-Ansicht, Zeitstrahl pro Kontakt, Zusammenfassung zuerst, Themen-Gruppierung – verbunden über **semantischen Zoom**:
+
+| Zoomstufe | Darstellung |
+|---|---|
+| Ganz raus | **Themen-Wabe**: Vorgänge als Hexagon-Waben, automatisch gruppiert (auch über Threads und Absender hinweg); Grösse = Aktivität, Farbe = Zustand |
+| Mittel | **Zeitstrahl** pro Kontakt/Thema als **Quipu-Schnüre** (Knotenart = Mail, Rechnung, Ticket, Termin); im Querformat als **Partitur** mit einer Zeile pro Person |
+| Ganz rein | **Chat-Ansicht**: Zitat-Ketten entfernt, nur neuer Inhalt pro Nachricht |
+
+Querschnittlich:
+- **Zusammenfassung zuerst:** Kopfkarte jedes Vorgangs mit „Worum geht es, Stand, was ist offen, wer ist dran?“ sowie hervorgehobenen Zusagen und Entscheidungen (On-Device-KI).
+- **Hexagramm-Glyph:** kompaktes Status-Symbol aus sechs Linien (z. B. du bist dran, offen, Geld im Spiel, Termin, Anhang, verschlüsselt) neben jedem Vorgang, in Widgets und auf der Uhr.
+- **Drehgeste:** hochkant = lesen/antworten, quer = Überblick (Partitur/Quipu).
+- **Swipe-Triage** auf der Pole Position; Tippen blättert wie Stories durch den Verlauf eines Vorgangs.
+- **Jahresringe** im Kopf der Kontaktseite (Dauer und Intensität der Beziehung).
+- **Blackboard-Modus** für komplexe Vorgänge (v. a. Tablet): Pinnwand mit automatisch gezogenen Fäden zwischen zusammengehörenden Mails, Personen, Rechnungen und Terminen.
 
 ### 5.9 Konten
 
@@ -262,3 +272,4 @@ Vorschlag als Arbeitsgrundlage:
 - [ADR-004 KI](adr/ADR-004-ki.md)
 - [ADR-005 Verschlüsselung](adr/ADR-005-verschluesselung.md)
 - [Standards-Referenz](STANDARDS.md)
+- [Brainstorming Verlaufsdarstellung](konzepte/VERLAUF-BRAINSTORM.md)
