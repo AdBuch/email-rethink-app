@@ -161,6 +161,12 @@ Die Herkunft des Status wird angezeigt („bezahlt laut Mail vom 3.11.“).
 - Optional: Zahlungsdaten (IBAN, Referenz, Betrag) einzeln kopierbar.
 - Nach dem Teilen fragt die App beim nächsten Öffnen nach: „Rechnung von X bezahlt?“
 
+**Darstellung offener Rechnungen**
+- Offene Rechnungen als **Kartenstapel**; Wischen links/rechts blättert, überfällige zuerst, dann nach Fälligkeit.
+- Jede Karte hat zwei Knöpfe: **✓ Bezahlt** (Stempel-Animation, ins Archiv, 5 s Rückgängig) und **⇪ Teilen** (Rechnungsanhang über das System-Teilen-Menü an die Banking-App; bei QR-Zahlteil wahlweise PDF oder nur QR-Code).
+- **Quipu-Leiste** am Rand (rechts oder links, einstellbar): eine Schnur pro Rechnungssteller, ein Knoten pro offener Rechnung, Knotenfarbe nach Dringlichkeit. Schnur antippen filtert den Stapel, Knoten antippen springt zur Rechnung; bezahlte Knoten lösen sich auf.
+- Details: [Darstellung pro Mail-Typ](konzepte/DARSTELLUNG-PRO-TYP.md), Abschnitt 2.
+
 **Archivierung**
 - Bezahlte Rechnungen werden automatisch archiviert, **gruppiert nach Rechnungssteller**.
 - Ansicht pro Rechnungssteller: alle Rechnungen, Summen pro Jahr, Export (PDF-Sammlung/CSV) z. B. für die Steuererklärung.
@@ -254,7 +260,7 @@ Jeder Typ hat eine eigene Darstellung nach gemeinsamer Grammatik (Kopf · Haupta
 | Typ | Leitbild | Hauptaktion |
 |---|---|---|
 | Korrespondenz | Gespräch (Chat + Zusammenfassung) | Antworten |
-| Rechnung | Beleg mit Status-Stempel und Preisvergleich | An Banking-App |
+| Rechnung | Belegstapel zum Wischen mit Quipu-Leiste (Knoten = offene Rechnungen pro Anbieter) | ✓ Bezahlt · ⇪ Teilen an Banking-App |
 | Vertrag | Akte mit Lebenslinie und Kündigungsfenstern | Frist merken / Kündigen |
 | Systemmail | Anzeigetafel, nur aktueller Zustand pro Quelle | – |
 | Newsletter | Kiosk mit Leseansicht, Tracking-Schutz, Wochen-Digest | Lesen / Abmelden |

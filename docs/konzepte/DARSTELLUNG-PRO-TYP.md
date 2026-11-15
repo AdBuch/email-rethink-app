@@ -22,7 +22,7 @@ Dazu überall gleich: Typ-Farbe in der Themen-Wabe, Hexagramm-Glyph als Status, 
 | Typ | Leitbild | Kopf | Hauptaktion | Lebenszyklus | Verlaufsform |
 |---|---|---|---|---|---|
 | **Korrespondenz** | Gespräch | Wer, Thema, wer ist dran | Antworten | bleibt, bis erledigt | Chat · Partitur · Quipu pro Kontakt |
-| **Rechnung** | Beleg | Betrag, Fälligkeit, Status-Stempel | An Banking-App | offen → bezahlt → Archiv | Quipu pro Rechnungssteller |
+| **Rechnung** | Belegstapel + Quipu-Leiste | Betrag, Fälligkeit, Status-Stempel | ✓ Bezahlt · ⇪ Teilen an Banking-App | offen → bezahlt → Archiv | Quipu pro Rechnungssteller |
 | **Vertrag** | Akte | Partner, Laufzeit, Kündigungsfrist, Kosten | Frist merken / Kündigen | lebt bis Vertragsende | Lebenslinie mit Kündigungsfenstern |
 | **Systemmail** | Anzeigetafel | Absender, aktueller Zustand | – (nur lesen) | verschwindet, wenn Zustand final | eine Zeile pro Quelle, nur letzter Stand |
 | **Newsletter** | Kiosk | Titelbild, Thema, Lesedauer | Lesen / Abmelden | verblasst bis zur Löschung | Ausgaben-Stapel pro Absender |
@@ -57,23 +57,45 @@ Echte Mails von Menschen: privat und geschäftlich.
 - Geschäftlich vs. privat: gleiche Form, geschäftlich zusätzlich mit Signatur-Daten des Absenders (Firma, Telefon) als Visitenkarte.
 - Querformat: Partitur. Kontaktseite: Jahresringe + Quipu-Schnur.
 
-## 2. Rechnung – der Beleg
+## 2. Rechnung – der Belegstapel mit Quipu-Leiste
+
+Offene Rechnungen liegen als **Stapel zum Durchwischen**. Am Rand hängt eine **Quipu-Leiste**: eine Schnur pro Rechnungssteller, ein Knoten pro offener Rechnung.
 
 ```
-┌───────────────────────────────────┐
-│ Swisscom                 ┏━━━━━━┓ │
-│ Rechnung November        ┃ OFFEN┃ │
-│                          ┗━━━━━━┛ │
-│        CHF 82.00                  │
-│   fällig in 12 Tagen (27.11.)     │
-│   ▲ +3.00 gegenüber Oktober       │
-│                                   │
-│   ▣ QR-Zahlteil    📄 PDF         │
-│ [     An Banking-App senden     ] │
-└───────────────────────────────────┘
+┌─────────────────────────────────────┬──────┐
+│  Offene Rechnungen        3 von 7   │  ┃   │
+│ ┌─────────────────────────────────┐ │  ┣●● │ Swisscom
+│ │ Swisscom              ┏━━━━━━┓  │ │  ┃   │
+│ │ Rechnung November     ┃ OFFEN┃  │ │  ┣◉  │ Helsana (überfällig)
+│ │                       ┗━━━━━━┛  │ │  ┃   │
+│ │          CHF 82.00              │ │  ┣●●●│ EWZ
+│ │    fällig in 12 Tagen (27.11.)  │ │  ┃   │
+│ │    ▲ +3.00 gegenüber Oktober    │ │  ┣●  │ Keller
+│ │    ▣ QR-Zahlteil   📄 PDF       │ │  ┃   │
+│ │                                 │ │      │
+│ │  [ ✓ Bezahlt ]   [ ⇪ Teilen ]   │ │      │
+│ └─────────────────────────────────┘ │      │
+│  ┊└──────────────────────────────┘  │      │
+│      ◀  wischen zum Blättern  ▶     │      │
+└─────────────────────────────────────┴──────┘
 ```
 
-- Gestaltet wie ein **Beleg**: Betrag gross, Fälligkeit als Countdown, **Status-Stempel** (OFFEN rot → BEZAHLT grün, schräg aufgestempelt mit Animation).
+**Stapel**
+- Jede offene Rechnung ist eine Karte; **Wischen links/rechts blättert** durch den Stapel. Reihenfolge: überfällig zuerst, dann nach Fälligkeit.
+- Gestaltet wie ein **Beleg**: Betrag gross, Fälligkeit als Countdown, **Status-Stempel**.
+- Zwei Knöpfe auf jeder Karte:
+  - **✓ Bezahlt** – „BEZAHLT“ wird grün aufgestempelt, die Karte fliegt ins Archiv; 5 Sekunden „Rückgängig“.
+  - **⇪ Teilen** – öffnet das System-Teilen-Menü mit dem **Rechnungsanhang** (PDF) für die Banking-App. Hat die Rechnung einen QR-Zahlteil, Auswahl „PDF“ oder „nur QR-Code“. iOS und Android schlagen zuletzt genutzte Apps vorne vor, die Banking-App ist damit nach dem ersten Mal einen Tipp entfernt.
+- Nach dem Teilen trägt die Karte den Vermerk „an Banking-App gesendet am …“; beim nächsten Öffnen fragt die App „bezahlt?“ mit einem Tipp auf ✓.
+- Automatisch als bezahlt erkannte Rechnungen (Lastschrift-Hinweis, Zahlungsbestätigung) verlassen den Stapel von selbst.
+
+**Quipu-Leiste**
+- Senkrechte Hauptschnur am Rand, **pro Rechnungssteller eine Schnur**, **pro offener Rechnung ein Knoten**. Statt Namen das Logo bzw. die Initialen; Name bei langem Drücken.
+- Knotenfarbe nach Dringlichkeit: neutral · bald fällig (orange) · überfällig (rot, ◉).
+- **Schnur antippen** = Stapel auf diesen Rechnungssteller filtern; **Knoten antippen** = direkt zu dieser Rechnung springen; **an der Leiste entlangziehen** = schnell durch die Anbieter scrollen.
+- Wird eine Rechnung bezahlt, **löst sich ihr Knoten** (Animation); eine Schnur ohne Knoten verschwindet. Leere Leiste = alles bezahlt.
+- Mehr als vier offene Rechnungen eines Stellers: vier Knoten + „+2“.
+- **Seite wählbar** (rechts oder links, für Rechts- und Linkshänder); Standard rechts.
 - **Preisvergleich** zur letzten Rechnung desselben Stellers: Erhöhungen sofort sichtbar.
 - **Herkunft des Status:** „bezahlt laut Mail vom 3.11.“ / „wird per Lastschrift belastet“.
 - Archiv als **Quipu pro Rechnungssteller**: jeder Knoten eine Rechnung, Knotengrösse = Betrag, Summe pro Jahr am Schnurende; Ausreisser (doppelte Rechnung, Preissprung) farbig.
