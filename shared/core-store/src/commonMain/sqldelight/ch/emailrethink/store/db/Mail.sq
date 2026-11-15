@@ -44,13 +44,34 @@ selectFolders:
 SELECT * FROM folder WHERE account_id = ? ORDER BY display_name;
 
 upsertAccount:
-INSERT OR REPLACE INTO account(id, email, display_name, transport_kind, imap_host, imap_port)
-VALUES (?, ?, ?, ?, ?, ?);
+INSERT INTO account(id, email, display_name, transport_kind, imap_host, imap_port)
+VALUES (?, ?, ?, ?, ?, ?)
+ON CONFLICT(id) DO UPDATE SET
+  email = excluded.email,
+  display_name = excluded.display_name,
+  transport_kind = excluded.transport_kind,
+  imap_host = excluded.imap_host,
+  imap_port = excluded.imap_port;
 
 upsertFolder:
-INSERT OR REPLACE INTO folder(id, account_id, remote_name, display_name, uid_validity)
-VALUES (?, ?, ?, ?, ?);
+INSERT INTO folder(id, account_id, remote_name, display_name, uid_validity)
+VALUES (?, ?, ?, ?, ?)
+ON CONFLICT(id) DO UPDATE SET
+  account_id = excluded.account_id,
+  remote_name = excluded.remote_name,
+  display_name = excluded.display_name,
+  uid_validity = excluded.uid_validity;
 
 upsertMessage:
-INSERT OR REPLACE INTO message(id, folder_id, remote_uid, message_id_header, sender, subject, sent_at, received_at, is_read, snippet)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+INSERT INTO message(id, folder_id, remote_uid, message_id_header, sender, subject, sent_at, received_at, is_read, snippet)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+ON CONFLICT(id) DO UPDATE SET
+  folder_id = excluded.folder_id,
+  remote_uid = excluded.remote_uid,
+  message_id_header = excluded.message_id_header,
+  sender = excluded.sender,
+  subject = excluded.subject,
+  sent_at = excluded.sent_at,
+  received_at = excluded.received_at,
+  is_read = excluded.is_read,
+  snippet = excluded.snippet;
