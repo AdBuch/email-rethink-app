@@ -164,14 +164,20 @@ class InboxStore(private val database: MailDatabase, private val driver: SqlDriv
          * Eine unverschlüsselte SQLite würde `PRAGMA key` stillschweigend ignorieren.
          */
         fun requireCipher(driver: SqlDriver) {
-            val version = driver.executeQuery(
-                identifier = null,
-                sql = "PRAGMA cipher_version",
-                mapper = { cursor ->
-                    QueryResult.Value(if (cursor.next().value) cursor.getString(0) else null)
-                },
-                parameters = 0,
-            ).value
+            // Normales SQLite kann das unbekannte PRAGMA mit einer SQLException
+            // beantworten. Auch dieser Fall muss kontrolliert als unsicher gelten.
+            val version = try {
+                driver.executeQuery(
+                    identifier = null,
+                    sql = "PRAGMA cipher_version",
+                    mapper = { cursor ->
+                        QueryResult.Value(if (cursor.next().value) cursor.getString(0) else null)
+                    },
+                    parameters = 0,
+                ).value
+            } catch (_: Exception) {
+                null
+            }
             if (version.isNullOrBlank()) {
                 driver.close()
                 throw DatabaseNotEncryptedException()
