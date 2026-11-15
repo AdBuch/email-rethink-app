@@ -1,4 +1,30 @@
+[Error]
+enum MailError {
+    "InvalidInput",
+    "ConnectionFailed",
+    "TlsFailed",
+    "AuthenticationFailed",
+    "ProtocolFailed",
+};
+
+dictionary MailFolder {
+    string name;
+};
+
+dictionary MailHeader {
+    u32 uid;
+    string sender;
+    string subject;
+};
+
+dictionary InboxSnapshot {
+    sequence<MailFolder> folders;
+    sequence<MailHeader> headers;
+};
+
 namespace mail_transport {
     string transport_version();
     boolean is_valid_imaps_port(u16 port);
+    [Throws=MailError]
+    InboxSnapshot fetch_inbox(string host, u16 port, string username, string password, u32 limit);
 };
