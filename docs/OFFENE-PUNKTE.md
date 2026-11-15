@@ -4,7 +4,7 @@ Stand 15.11.2026. Diese Punkte sind noch nicht entschieden; die Spezifikation tr
 
 | # | Thema | Frage | Vorläufige Annahme |
 |---|---|---|---|
-| 1 | Verlaufsdarstellung | Grundkonzept entschieden („Chaos mit Zoomstufen“, Spez. 5.8). Offen: Quipu oder Partitur im Querformat? Welche sechs Linien hat der Hexagramm-Glyph? | Per Prototyp mit 5–8 Testpersonen entscheiden ([Brainstorming](konzepte/VERLAUF-BRAINSTORM.md)) |
+| 1 | Verlaufsdarstellung | **Quipu und Partitur umschaltbar beschlossen** ([ADR-009](adr/ADR-009-VERLAUFSDARSTELLUNG.md)). Noch offen: konkrete sechs Linien des Hexagramm-Glyphen und UI-Ausgestaltung. | MVP zuerst einfache Standardansicht; Visualisierungen iterativ prototypisieren und testen |
 | 2 | Produktname | Wie heisst die App? | Arbeitstitel „Email-Rethink“ |
 | 3 | Geschäftsmodell | Kostenlos, Einmalkauf, Abo? Wer zahlt Cloud-KI? | offen |
 | 4 | Cloud-LLM-Anbieter | Welcher Anbieter / eigener API-Schlüssel des Nutzers? | austauschbare Schnittstelle |
