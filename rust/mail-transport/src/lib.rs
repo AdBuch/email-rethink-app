@@ -78,9 +78,12 @@ pub fn fetch_inbox(
         .build()
         .map_err(|_| MailError::ConnectionFailed)?;
     runtime.block_on(async {
-        timeout(TIMEOUT, fetch_inbox_async(&host, port, &username, &password, limit))
-            .await
-            .map_err(|_| MailError::ConnectionFailed)?
+        timeout(
+            TIMEOUT,
+            fetch_inbox_async(&host, port, &username, &password, limit),
+        )
+        .await
+        .map_err(|_| MailError::ConnectionFailed)?
     })
 }
 
@@ -103,8 +106,7 @@ async fn fetch_inbox_async(
     let config = ClientConfig::builder()
         .with_root_certificates(roots)
         .with_no_client_auth();
-    let server_name =
-        ServerName::try_from(host.to_owned()).map_err(|_| MailError::InvalidInput)?;
+    let server_name = ServerName::try_from(host.to_owned()).map_err(|_| MailError::InvalidInput)?;
     let tls = TlsConnector::from(Arc::new(config))
         .connect(server_name, tcp)
         .await
@@ -155,11 +157,18 @@ async fn fetch_inbox_async(
             if let Some(uid) = message.uid {
                 let raw = message.header().unwrap_or_default();
                 let (sender, subject) = parse_basic_headers(raw);
-                headers.push(MailHeader { uid, sender, subject });
+                headers.push(MailHeader {
+                    uid,
+                    sender,
+                    subject,
+                });
             }
         }
     }
-    session.logout().await.map_err(|_| MailError::ProtocolFailed)?;
+    session
+        .logout()
+        .await
+        .map_err(|_| MailError::ProtocolFailed)?;
     Ok(InboxSnapshot { folders, headers })
 }
 
@@ -169,10 +178,16 @@ fn parse_basic_headers(bytes: &[u8]) -> (String, String) {
     let mut sender = String::new();
     let mut subject = String::new();
     for line in raw.lines() {
-        if let Some(value) = line.strip_prefix("From:").or_else(|| line.strip_prefix("from:")) {
+        if let Some(value) = line
+            .strip_prefix("From:")
+            .or_else(|| line.strip_prefix("from:"))
+        {
             sender = value.trim().to_owned();
         }
-        if let Some(value) = line.strip_prefix("Subject:").or_else(|| line.strip_prefix("subject:")) {
+        if let Some(value) = line
+            .strip_prefix("Subject:")
+            .or_else(|| line.strip_prefix("subject:"))
+        {
             subject = value.trim().to_owned();
         }
     }
@@ -197,9 +212,18 @@ mod tests {
 
     #[test]
     fn invalid_parameters_rejected_before_network() {
-        assert!(matches!(validate("imap.example.org", 143, "a", 10), Err(MailError::InvalidInput)));
-        assert!(matches!(validate("imap.example.org", 993, "a", 101), Err(MailError::InvalidInput)));
-        assert!(matches!(validate("", 993, "a", 10), Err(MailError::InvalidInput)));
+        assert!(matches!(
+            validate("imap.example.org", 143, "a", 10),
+            Err(MailError::InvalidInput)
+        ));
+        assert!(matches!(
+            validate("imap.example.org", 993, "a", 101),
+            Err(MailError::InvalidInput)
+        ));
+        assert!(matches!(
+            validate("", 993, "a", 10),
+            Err(MailError::InvalidInput)
+        ));
         assert!(matches!(validate("imap.example.org", 993, "a", 10), Ok(())));
     }
 
