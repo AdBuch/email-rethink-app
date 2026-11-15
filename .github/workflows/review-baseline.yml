@@ -1,0 +1,50 @@
+# Temporärer Diagnose-Workflow für das Review: baut den unveränderten Codex-Stand,
+# damit die Befunde aus docs/reviews/REVIEW-PHASE-0.md mit echten Läufen belegt sind.
+# Wird vor dem Merge wieder entfernt.
+name: Review-Baseline (temporär)
+on:
+  push:
+    branches: [feature/phase-0-grundlagen]
+jobs:
+  rust-baseline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: cargo build (Originalstand)
+        working-directory: rust/mail-transport
+        run: |
+          set +e
+          cargo build 2>&1 | tail -n 200
+          echo "BASELINE cargo build exit=${PIPESTATUS[0]}"
+      - name: cargo clippy (Originalstand)
+        working-directory: rust/mail-transport
+        run: |
+          set +e
+          cargo clippy --all-targets -- -D warnings 2>&1 | tail -n 120
+          echo "BASELINE cargo clippy exit=${PIPESTATUS[0]}"
+      - name: cargo test (Originalstand)
+        working-directory: rust/mail-transport
+        run: |
+          set +e
+          cargo test 2>&1 | tail -n 80
+          echo "BASELINE cargo test exit=${PIPESTATUS[0]}"
+      - name: TLS-Kryptoanbieter im Abhängigkeitsbaum (W4)
+        working-directory: rust/mail-transport
+        run: |
+          set +e
+          cargo tree -i aws-lc-sys 2>&1 | head -n 30
+          echo "BASELINE aws-lc-sys exit=$?"
+          cargo tree -i ring 2>&1 | head -n 30
+          echo "BASELINE ring exit=$?"
+  android-baseline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Gradle-Build ohne Wrapper (Originalstand)
+        run: |
+          set +e
+          ls gradlew gradle/wrapper 2>&1
+          java -version 2>&1
+          gradle --version | head -n 12
+          gradle :androidApp:assembleDebug --stacktrace 2>&1 | tail -n 200
+          echo "BASELINE gradle assembleDebug exit=${PIPESTATUS[0]}"
