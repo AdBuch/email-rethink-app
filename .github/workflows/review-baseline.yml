@@ -55,39 +55,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Signaturen async-imap
-        working-directory: rust/mail-transport
-        run: |
-          set +e
-          cargo fetch >/dev/null 2>&1
-          S=$(ls -d ~/.cargo/registry/src/*/async-imap-0.12*)
-          echo "SRC=$S"; ls $S/src $S/src/types
-          grep -nE "^\s*pub (async )?fn |^impl|^pub struct|^pub enum" -A3 $S/src/client.rs | grep -vE "^\-\-$|///" | head -n 330
-          echo "=== fetch.rs"; grep -nE "pub (async )?fn |pub [a-z_]+:|^impl|^pub struct" -A2 $S/src/types/fetch.rs | grep -v "///" | head -n 120
-          echo "=== mailbox.rs"; grep -nE "pub [a-z_]+:" $S/src/types/mailbox.rs
-          echo "=== error.rs"; sed -n '1,80p' $S/src/error.rs | grep -v "///"
-          echo "=== Cargo features"; sed -n '/\[features\]/,/^$/p' $S/Cargo.toml
-          P=$(ls -d ~/.cargo/registry/src/*/imap-proto-*); echo "=== imap-proto $P"; grep -rn "pub struct Envelope" -A14 $P/src | head -n 20; grep -rn "pub struct Address" -A8 $P/src | head -n 12
-          sed -n '1160,1170p' $S/src/client.rs
-          exit 0
-      - name: Versionen
-        run: |
-          set +e
-          for c in mail-parser thiserror cargo-ndk uniffi rustls tokio-rustls webpki-roots rustls-pemfile zeroize; do cargo search $c --limit 1 2>/dev/null | head -n 1; done
-          rustc --version; xcodegen --version 2>&1 | head -n1
-          for a in actions/checkout:v4 actions/checkout:v5 actions/setup-java:v4 actions/setup-java:v5 actions/upload-artifact:v4; do r=${a%%:*}; t=${a##*:}; echo "$a $(git ls-remote https://github.com/$r "refs/tags/$t*" | sort -t/ -k3 -V | tail -n 3 | tr '\n' ' ')"; done
-          echo "gradle-8.14.3 sha256: $(curl -sL https://services.gradle.org/distributions/gradle-8.14.3-bin.zip.sha256)"
-          for m in net/zetetic/sqlcipher-android net/java/dev/jna/jna org/jetbrains/kotlinx/kotlinx-coroutines-core app/cash/sqldelight/runtime; do echo "$m: $(curl -sL https://repo1.maven.org/maven2/$m/maven-metadata.xml | grep -E '<release>|<latest>' | tr -d ' \n')"; done
-          for m in androidx/sqlite/sqlite androidx/lifecycle/lifecycle-viewmodel-compose androidx/compose/material3/material3 androidx/activity/activity-compose com/android/tools/build/gradle; do echo "$m: $(curl -sL https://dl.google.com/dl/android/maven2/$m/maven-metadata.xml | grep -oE '<version>[^<]*</version>' | grep -vE 'alpha|beta|rc' | tail -n 3 | tr -d '\n')"; done
-          echo "NDK: $ANDROID_NDK_HOME $ANDROID_NDK_LATEST_HOME"; ls $ANDROID_HOME/ndk
-          docker run --rm --entrypoint sh greenmail/standalone:2.1.3 -c 'ls -la /home/greenmail; cat /home/greenmail/*.sh 2>/dev/null | head -n 30' 2>&1 | tail -n 40
-          exit 0
       - name: mail-parser API
         run: |
           set +e
           mkdir /tmp/mp && cd /tmp/mp && cargo init --name mp -q && cargo add mail-parser -q && cargo fetch -q
-          S=$(ls -d ~/.cargo/registry/src/*/mail-parser-*); echo "SRC=$S"
-          grep -rnE "pub fn (parse|subject|body_text|body_html|text_bodies|html_bodies|from|date|message_id)\b" -A2 $S/src | head -n 60
-          grep -rn "pub enum PartType" -A22 $S/src | head -n 30
-          grep -rn "pub struct MessagePart" -A14 $S/src | head -n 20
+          S=$(ls -d ~/.cargo/registry/src/*/mail-parser-*)
+          sed -n '300,360p' $S/src/view/message.rs
+          grep -rnE "pub fn (text_bodies|html_bodies|body_text|body_html|attachments|root|parts|text_body|html_body)\b" -B6 -A14 $S/src/view/part.rs | head -n 150
+          ls $S/src $S/src/view
+          grep -n "pub " $S/src/lib.rs | head -n 60
+          sed -n '/^## Usage/,/^## /p' $S/README.md | head -n 80
           exit 0
