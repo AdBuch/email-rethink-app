@@ -9,6 +9,7 @@ Native E-Mail-App für iPhone und Android, die das Postfach automatisch abarbeit
 - [Architekturentscheidungen (ADR)](docs/adr/)
 - [Standards-Referenz](docs/STANDARDS.md)
 - [Brainstorming Verlaufsdarstellung](docs/konzepte/VERLAUF-BRAINSTORM.md)
+- [Darstellung pro Mail-Typ](docs/konzepte/DARSTELLUNG-PRO-TYP.md)
 
 ## Eckdaten
 

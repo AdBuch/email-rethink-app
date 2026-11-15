@@ -42,7 +42,7 @@ E-Mail gibt es seit über 50 Jahren, die Bedienung hat sich kaum verändert: Der
 | Begriff | Bedeutung |
 |---|---|
 | **Pole Position** | Die oberste, priorisierte Ansicht. Enthält nur echte, persönliche oder wichtige Mails sowie aktuell relevante Tickets und offene Rechnungen. |
-| **Ablage** | Automatisch geführte Bereiche: Rechnungen, Tickets, Newsletter, Codes, Benachrichtigungen. |
+| **Ablage** | Automatisch geführte Bereiche: Rechnungen, Verträge, Tickets, Newsletter, Codes, Systemmails. |
 | **Kategorie** | Ergebnis der Klassifizierung einer Mail (siehe 5.1). |
 | **Abarbeitung** | Die automatische Aktion nach der Klassifizierung (verschieben, extrahieren, Frist setzen, löschen). |
 | **App-Nutzer** | Kommunikationspartner, der ebenfalls diese App (oder einen anderen Autocrypt-fähigen Client) nutzt. |
@@ -106,10 +106,11 @@ Jede eingehende Mail erhält genau eine Hauptkategorie:
 |---|---|---|
 | **Wichtig / Persönlich** | Absender in Kontakten oder bisher beantwortet, direkt adressiert, kein Massenversand-Header, Antwort in eigenem Thread | Pole Position |
 | **Rechnung** | PDF mit Swiss QR-Bill oder EPC-QR, ZUGFeRD/Factur-X-XML, XRechnung, Begriffe wie „Rechnung“, „Invoice“, Betrag + Fälligkeit | Ablage Rechnungen (offen → Pole Position) |
+| **Vertrag** | Anhänge wie Vertrag/Police/AGB, Begriffe „Vertragsbestätigung“, „Laufzeit“, „Kündigungsfrist“, Mails von E-Signatur-Diensten | Ablage Verträge (Akte), Pole Position vor Kündigungsfristen |
 | **Ticket / Buchung** | `.pkpass`-Anhang, `.ics`-Anhang, schema.org-Markup (`FlightReservation`, `EventReservation` …), Buchungsnummern | Wallet + Pole Position bis zum Ereignis |
 | **Authentifizierung** | Kurzer Code (4–8 Zeichen) + Begriffe wie „Code“, „Bestätigung“, „Login“, „Verification“; Magic Links | Code-Karte, Auto-Entsorgung |
 | **Newsletter / Werbung** | `List-Unsubscribe`, `List-Id`, `Precedence: bulk`, bekannte Versanddienste | Ablage Newsletter |
-| **Benachrichtigung** | Systemmails (Versand, Kontoaktivität, Social Media) | Ablage Benachrichtigungen |
+| **Systemmail** | Versand, Bestellungen, Kontoaktivität, Login-Hinweise, Social Media, Server-/Build-Meldungen | Anzeigetafel; Sicherheitsrelevantes auf Pole Position |
 
 **Ablauf:**
 1. Deterministische Regeln (Header, Anhangstypen, strukturierte Daten). Schnell, erklärbar.
@@ -236,6 +237,30 @@ Querschnittlich:
 - Mails mit Konfidenz unter Schwelle werden nie automatisch gelöscht.
 - Tageszusammenfassung (optional): „Heute erledigt: 12 Newsletter, 3 Codes, 1 Rechnung archiviert.“
 
+### 5.12 Verträge
+
+- Eckdaten werden aus Mail und Anhang extrahiert: Vertragspartner, Vertragsnummer, Beginn, Laufzeit, automatische Verlängerung, Kündigungsfrist, nächster Kündigungstermin, Kosten.
+- Darstellung als **Akte** mit Lebenslinie (Abschluss, Änderungen, Kündigungsfenster).
+- Bei AGB- oder Preisänderungen wird angezeigt, was sich geändert hat.
+- Erinnerungen vor Kündigungsfristen (z. B. 30 und 7 Tage vorher), Vertrag dann auf der Pole Position.
+- Kündigen-Assistent: KI entwirft das Kündigungsschreiben; Versand nur durch den Nutzer.
+- Rechnungen desselben Vertragspartners werden mit der Akte verknüpft.
+- Archiv nach Lebensbereich (Wohnen, Versicherung, Mobilität, Telekom, Arbeit, Abos) mit Monatskosten-Summe.
+
+### 5.13 Darstellung pro Mail-Typ
+
+Jeder Typ hat eine eigene Darstellung nach gemeinsamer Grammatik (Kopf · Hauptaktion · Lebenszyklus · Verlaufsform). Details im Konzept [Darstellung pro Mail-Typ](konzepte/DARSTELLUNG-PRO-TYP.md).
+
+| Typ | Leitbild | Hauptaktion |
+|---|---|---|
+| Korrespondenz | Gespräch (Chat + Zusammenfassung) | Antworten |
+| Rechnung | Beleg mit Status-Stempel und Preisvergleich | An Banking-App |
+| Vertrag | Akte mit Lebenslinie und Kündigungsfenstern | Frist merken / Kündigen |
+| Systemmail | Anzeigetafel, nur aktueller Zustand pro Quelle | – |
+| Newsletter | Kiosk mit Leseansicht, Tracking-Schutz, Wochen-Digest | Lesen / Abmelden |
+| Ticket | Bordkarte | In Wallet |
+| Code | Countdown | Kopieren |
+
 ---
 
 ## 6. Nicht-funktionale Anforderungen
@@ -273,3 +298,4 @@ Querschnittlich:
 - [ADR-005 Verschlüsselung](adr/ADR-005-verschluesselung.md)
 - [Standards-Referenz](STANDARDS.md)
 - [Brainstorming Verlaufsdarstellung](konzepte/VERLAUF-BRAINSTORM.md)
+- [Darstellung pro Mail-Typ](konzepte/DARSTELLUNG-PRO-TYP.md)
