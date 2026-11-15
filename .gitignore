@@ -6,3 +6,14 @@ build/
 local.properties
 xcuserdata/
 DerivedData/
+
+# Rust
+target/
+# Testzertifikate (werden bei jedem Lauf neu erzeugt)
+tests/greenmail/certs/
+# Erzeugte Bindings und Frameworks
+iosApp/Generated/
+iosApp/build/
+iosApp/*.xcodeproj/
+*.xcframework/
+.kotlin/

@@ -1,0 +1,45 @@
+name: CI
+on:
+  pull_request:
+  push:
+    branches: [main, feature/phase-0-grundlagen]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  rust-check:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: rust/mail-transport
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - name: Rust-Toolchain (rust-toolchain.toml)
+        run: rustup show active-toolchain || rustup toolchain install
+      - name: Formatierung
+        run: cargo fmt --check
+      - name: Lint
+        run: cargo clippy --locked --all-targets --all-features -- -D warnings
+      - name: Unit-Tests
+        run: cargo test --locked --lib
+      - name: Abhängigkeiten – kein aws-lc, nur ring (Review W4)
+        run: |
+          if cargo tree --locked -e normal -i aws-lc-sys >/dev/null 2>&1; then
+            echo "aws-lc-sys ist im Abhängigkeitsbaum" >&2; exit 1
+          fi
+          cargo tree --locked -e normal -i ring | head -n 5
+
+  imap-integration:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - name: Rust-Toolchain (rust-toolchain.toml)
+        working-directory: rust/mail-transport
+        run: rustup show active-toolchain || rustup toolchain install
+      - name: GreenMail-Integrationstests mit Test-CA
+        run: tests/greenmail/run.sh

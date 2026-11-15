@@ -50,19 +50,27 @@ jobs:
           gradle --version | head -n 12
           gradle :androidApp:assembleDebug --stacktrace 2>&1 | tail -n 200
           echo "BASELINE gradle assembleDebug exit=${PIPESTATUS[0]}"
-  api-auskunft:
-    # Liefert Signaturen und Versionsstände, weil die Entwicklungsumgebung keinen Registry-Zugriff hat.
-    runs-on: ubuntu-latest
+  lockfile:
+    # Erzeugt Cargo.lock (in der Entwicklungsumgebung nicht möglich) und gibt es im Log aus.
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - name: mail-parser API
+      - name: Cargo.lock erzeugen
+        working-directory: rust/mail-transport
+        run: |
+          rustup show active-toolchain || rustup toolchain install
+          test -f Cargo.lock || cargo generate-lockfile
+          echo "-----BEGIN LOCK-----"; gzip -9c Cargo.lock | base64 -w 100; echo "-----END LOCK-----"
+      - name: Probe ohne --locked
+        working-directory: rust/mail-transport
         run: |
           set +e
-          mkdir /tmp/mp && cd /tmp/mp && cargo init --name mp -q && cargo add mail-parser -q && cargo fetch -q
-          S=$(ls -d ~/.cargo/registry/src/*/mail-parser-*)
-          sed -n '300,360p' $S/src/view/message.rs
-          grep -rnE "pub fn (text_bodies|html_bodies|body_text|body_html|attachments|root|parts|text_body|html_body)\b" -B6 -A14 $S/src/view/part.rs | head -n 150
-          ls $S/src $S/src/view
-          grep -n "pub " $S/src/lib.rs | head -n 60
-          sed -n '/^## Usage/,/^## /p' $S/README.md | head -n 80
-          exit 0
+          cargo clippy --all-targets --all-features -- -D warnings 2>&1 | tail -n 250
+          echo "PROBE clippy exit=${PIPESTATUS[0]}"
+          cargo test --lib 2>&1 | tail -n 80
+          echo "PROBE test exit=${PIPESTATUS[0]}"
+      - name: Probe GreenMail
+        run: |
+          set +e
+          tests/greenmail/run.sh 2>&1 | tail -n 250
+          echo "PROBE greenmail exit=${PIPESTATUS[0]}"
