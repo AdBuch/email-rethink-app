@@ -4,7 +4,8 @@
 use crate::{imap, ImapAccount, InboxSnapshot, MailBody, MailError};
 use std::time::Duration;
 
-pub use crate::imap::ImapSession;
+/// Angemeldete IMAP-Sitzung über TLS.
+pub type ImapSession = imap::ImapSession;
 
 #[derive(Debug, Clone)]
 pub struct TestOptions {
