@@ -1,0 +1,122 @@
+CREATE TABLE account (
+  id TEXT NOT NULL PRIMARY KEY,
+  email TEXT NOT NULL,
+  display_name TEXT,
+  transport_kind TEXT NOT NULL,
+  imap_host TEXT,
+  imap_port INTEGER,
+  username TEXT NOT NULL DEFAULT ''
+);
+
+CREATE TABLE folder (
+  id TEXT NOT NULL PRIMARY KEY,
+  account_id TEXT NOT NULL REFERENCES account(id) ON DELETE CASCADE,
+  remote_name TEXT NOT NULL,
+  display_name TEXT NOT NULL,
+  uid_validity INTEGER,
+  UNIQUE(account_id, remote_name)
+);
+
+-- id ist deterministisch: account:ordner:uidvalidity:uid (ADR-006: Mailbox + UIDVALIDITY + UID).
+CREATE TABLE message (
+  id TEXT NOT NULL PRIMARY KEY,
+  folder_id TEXT NOT NULL REFERENCES folder(id) ON DELETE CASCADE,
+  remote_uid INTEGER NOT NULL,
+  message_id_header TEXT,
+  sender TEXT,
+  sender_address TEXT,
+  subject TEXT,
+  sent_at INTEGER,
+  received_at INTEGER,
+  is_read INTEGER NOT NULL DEFAULT 0,
+  snippet TEXT,
+  UNIQUE(folder_id, remote_uid)
+);
+
+CREATE TABLE message_body (
+  message_id TEXT NOT NULL PRIMARY KEY REFERENCES message(id) ON DELETE CASCADE,
+  text_content TEXT,
+  html_content TEXT,
+  fetched_at INTEGER NOT NULL
+);
+
+CREATE INDEX message_by_folder_uid ON message(folder_id, remote_uid DESC);
+CREATE INDEX folder_by_account ON folder(account_id);
+
+selectAccounts:
+SELECT * FROM account ORDER BY email;
+
+upsertAccount:
+INSERT INTO account(id, email, display_name, transport_kind, imap_host, imap_port, username)
+VALUES (?, ?, ?, ?, ?, ?, ?)
+ON CONFLICT(id) DO UPDATE SET
+  email = excluded.email,
+  display_name = excluded.display_name,
+  transport_kind = excluded.transport_kind,
+  imap_host = excluded.imap_host,
+  imap_port = excluded.imap_port,
+  username = excluded.username;
+
+deleteAccount:
+DELETE FROM account WHERE id = ?;
+
+selectFolder:
+SELECT * FROM folder WHERE account_id = ? AND remote_name = ?;
+
+selectFolders:
+SELECT * FROM folder WHERE account_id = ? ORDER BY display_name;
+
+upsertFolder:
+INSERT INTO folder(id, account_id, remote_name, display_name, uid_validity)
+VALUES (?, ?, ?, ?, ?)
+ON CONFLICT(id) DO UPDATE SET
+  account_id = excluded.account_id,
+  remote_name = excluded.remote_name,
+  display_name = excluded.display_name,
+  uid_validity = excluded.uid_validity;
+
+selectInbox:
+SELECT message.*, folder.uid_validity FROM message
+JOIN folder ON folder.id = message.folder_id
+WHERE folder.account_id = ? AND folder.remote_name = ?
+ORDER BY message.remote_uid DESC
+LIMIT ?;
+
+selectMessage:
+SELECT message.*, folder.uid_validity FROM message
+JOIN folder ON folder.id = message.folder_id
+WHERE message.id = ?;
+
+countMessagesOfFolder:
+SELECT COUNT(*) FROM message WHERE folder_id = ?;
+
+-- Bei UIDVALIDITY-Wechsel sind alle gespeicherten UIDs wertlos.
+deleteMessagesOfFolder:
+DELETE FROM message WHERE folder_id = ?;
+
+-- Nachrichten im abgerufenen UID-Bereich, die der Server nicht mehr liefert, wurden dort gelöscht.
+deleteVanishedMessages:
+DELETE FROM message WHERE folder_id = ? AND remote_uid >= ? AND remote_uid NOT IN ?;
+
+upsertMessage:
+INSERT INTO message(id, folder_id, remote_uid, message_id_header, sender, sender_address, subject, sent_at, received_at, is_read, snippet)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+ON CONFLICT(id) DO UPDATE SET
+  message_id_header = excluded.message_id_header,
+  sender = excluded.sender,
+  sender_address = excluded.sender_address,
+  subject = excluded.subject,
+  sent_at = excluded.sent_at,
+  received_at = excluded.received_at,
+  is_read = excluded.is_read;
+
+selectBody:
+SELECT * FROM message_body WHERE message_id = ?;
+
+upsertBody:
+INSERT INTO message_body(message_id, text_content, html_content, fetched_at)
+VALUES (?, ?, ?, ?)
+ON CONFLICT(message_id) DO UPDATE SET
+  text_content = excluded.text_content,
+  html_content = excluded.html_content,
+  fetched_at = excluded.fetched_at;

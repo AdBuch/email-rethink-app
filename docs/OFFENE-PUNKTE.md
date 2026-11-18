@@ -4,7 +4,7 @@ Stand 15.11.2026. Diese Punkte sind noch nicht entschieden; die Spezifikation tr
 
 | # | Thema | Frage | Vorläufige Annahme |
 |---|---|---|---|
-| 1 | Verlaufsdarstellung | Grundkonzept entschieden („Chaos mit Zoomstufen“, Spez. 5.8). Offen: Quipu oder Partitur im Querformat? Welche sechs Linien hat der Hexagramm-Glyph? | Per Prototyp mit 5–8 Testpersonen entscheiden ([Brainstorming](konzepte/VERLAUF-BRAINSTORM.md)) |
+| 1 | Verlaufsdarstellung | **Quipu und Partitur umschaltbar beschlossen** ([ADR-009](adr/ADR-009-VERLAUFSDARSTELLUNG.md)). Noch offen: konkrete sechs Linien des Hexagramm-Glyphen und UI-Ausgestaltung. | MVP zuerst einfache Standardansicht; Visualisierungen iterativ prototypisieren und testen |
 | 2 | Produktname | Wie heisst die App? | Arbeitstitel „Email-Rethink“ |
 | 3 | Geschäftsmodell | Kostenlos, Einmalkauf, Abo? Wer zahlt Cloud-KI? | offen |
 | 4 | Cloud-LLM-Anbieter | Welcher Anbieter / eigener API-Schlüssel des Nutzers? | austauschbare Schnittstelle |
@@ -14,6 +14,9 @@ Stand 15.11.2026. Diese Punkte sind noch nicht entschieden; die Spezifikation tr
 | 8 | Ticket-Vorlauf | Ab wann auf der Pole Position? | 48 Stunden |
 | 9 | eBill (CH) | Integration in eBill-Prozess der Banken nötig/möglich? | nicht in V1 |
 | 10 | Rechnungs-Export | Format für Steuer/Buchhaltung | PDF-Sammlung + CSV |
-| 11 | Repo-Hosting | Wo soll das Repo liegen (GitHub, GitLab …)? | lokal, Übergabe als Archiv |
+| 11 | Repo-Hosting | Wo soll das Repo liegen (GitHub, GitLab …)? | lokal, Übergabe als Archiv; inzwischen GitHub |
 | 12 | Lizenz | Open Source (z. B. für Vertrauen bei Krypto/Relay) oder proprietär? | Relay quelloffen; App offen |
 | 13 | Gmail-Verifizierung | Budget/Zeit für Googles Sicherheitsprüfung (CASA) | Gmail zunächst über IMAP + OAuth |
+| 14 | IMAP-KMP-Bibliothek | **Architektur entschieden:** Rust-Kern + UniFFI gemäss [ADR-006](adr/ADR-006-RUST-IMAP-UNIFFI.md). Welche Crate besteht den mobilen Integrations-Spike? | `async-imap` 0.12.x bevorzugt, `io-imap` als Fallback; Freigabe nach Android-/iOS-Build und GreenMail-Tests |
+| 15 | SQLCipher-KMP-Integration | **Produktentscheidung getroffen:** Immer verschlüsselte Datenbank; zusätzliche App-Sperre optional (C), siehe [ADR-007](adr/ADR-007-LOKALE-VERSCHLUESSELUNG-APP-SPERRE.md). Welche konkrete SQLDelight-/SQLCipher-Kombination funktioniert auf beiden Plattformen? | Technischer Spike und Sicherheits-/Migrationstests vor realen Maildaten erforderlich |
+| 16 | Build-Toolchain | **CI-Entscheidung getroffen:** GitHub Actions mit Linux für Android und macOS für iOS, siehe [ADR-008](adr/ADR-008-CI-TOOLCHAIN.md). Welche exakten Versionen bestehen beide Builds? | Versionen erst nach erfolgreichen Android-/iOS-CI-Läufen als verifiziert markieren |
