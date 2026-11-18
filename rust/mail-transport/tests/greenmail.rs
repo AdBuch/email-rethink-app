@@ -364,11 +364,13 @@ async fn negativ_uidvalidity_wechsel() {
     assert_eq!(before.headers.len(), 1);
     let old_uid = before.headers[0].uid;
 
-    // Ordner löschen und neu anlegen: Der Server muss eine neue UIDVALIDITY vergeben.
+    // Ordner umbenennen und unter dem alten Namen neu anlegen: Der Server muss
+    // für den neuen Ordner eine neue UIDVALIDITY vergeben. (DELETE ist in
+    // GreenMail 2.1.3 nicht verwendbar: NullPointerException in deleteMailbox.)
     let mut session = open_session(&acc, TEST_PASSWORD, trusted("INBOX"))
         .await
         .expect("Sitzung");
-    session.delete(folder).await.expect("DELETE");
+    session.rename(folder, "Wechsel-alt").await.expect("RENAME");
     tokio::time::sleep(Duration::from_millis(1100)).await;
     session.create(folder).await.expect("CREATE");
     let _ = session.logout().await;
@@ -395,11 +397,13 @@ async fn negativ_uidvalidity_wechsel() {
     assert_eq!(stale, Err(MailError::UidValidityChanged));
 }
 
-/// Belegt Review-Befund B4: `Fetch::header()` liefert für
-/// `BODY[HEADER.FIELDS (...)]` nichts – der ursprüngliche Abruf hätte leere
-/// Absender und Betreffs ergeben.
+/// Prüft Review-Befund B4 („`Fetch::header()` liefert für
+/// `BODY[HEADER.FIELDS (...)]` nichts“). Der erste echte Lauf hat B4
+/// widerlegt: async-imap 0.12 liefert die Felder über `header()`. Der Test hält
+/// dieses Verhalten fest. Der Client nutzt trotzdem ENVELOPE (strukturiert,
+/// ohne eigenes Header-Parsing).
 #[tokio::test]
-async fn review_b4_header_fields_sind_ueber_header_nicht_lesbar() {
+async fn review_b4_widerlegt_header_fields_sind_ueber_header_lesbar() {
     use futures_util::TryStreamExt;
     let user = "b4";
     append(
@@ -424,9 +428,7 @@ async fn review_b4_header_fields_sind_ueber_header_nicht_lesbar() {
         .await
         .expect("FETCH-Antworten");
     assert!(!fetched.is_empty());
-    assert!(
-        fetched.iter().all(|message| message.header().is_none()),
-        "B4 widerlegt: header() liefert HEADER.FIELDS doch"
-    );
+    let header = fetched[0].header().expect("header() liefert HEADER.FIELDS");
+    assert!(String::from_utf8_lossy(header).contains("Sichtbar?"));
     let _ = session.logout().await;
 }
